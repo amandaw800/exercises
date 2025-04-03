@@ -21,7 +21,7 @@ function divide(num1, num2)
         return "INVALID"
     }
   
-    return (num1/num2).toFixed(2)
+    return Math.round((num1 /num2) * 100)/100
 }
 
 function operate(num1, operator, num2)
@@ -32,8 +32,8 @@ function operate(num1, operator, num2)
 
     }
     else {
-        num1 = parseInt(num1)
-        num2 = parseInt(num2)
+        num1 = parseFloat(num1)
+        num2 = parseFloat(num2)
     }
  
 
@@ -59,7 +59,7 @@ function convertString(equation)
 {
     if(equation.length < 3)
     {
-        buttonValues = "INVALID"
+        return "INVALID"
     }
 
     const parsed = []
@@ -105,6 +105,8 @@ function clickButton()
 
     let buttonValues = ""
     let calculation = 0
+    let totalOperators = 0
+
 
     digits.forEach((button)=>
     {
@@ -112,16 +114,28 @@ function clickButton()
         {
             if(button.className == "equals")
             {
-                console.log("Button values are: " + buttonValues)
         
                 const converted = convertString(buttonValues)
 
+                if(converted === "INVALID")
+                {
+                   
+                    calcDisplay.textContent = "INVALID"
+                    buttonValues = ""
+                    calculation = 0
+
+    
+                }
+                else 
+                {
+                    
                 
 
+                
                 if(calculation == 0)
                 {
                     calculation = operate(converted[0], converted[1], converted[2])
-                    console.log("First pass is: " + calculation)
+                    calcDisplay.textContent = calculation
                     
                 }
                 else if (calculation > 0){
@@ -129,21 +143,76 @@ function clickButton()
                     converted[0] = calculation
                     console.log(converted)
                     calculation = operate(calculation, converted[1], converted[2])
+                    calcDisplay.textContent = calculation
             
                   
-                    console.log("Second pass is :" + calculation)
                 }
                 buttonValues = calculation
+            }
 
 
             }
             else if(button.className == "number" || button.className == "operator")
                 {
-            
                     buttonValues += button.textContent
                     calcDisplay.textContent = buttonValues
+
+
+                    for(let i =0; i < buttonValues.length; i++)
+                    {
+                        console.log(buttonValues[i])
+                        if (/[+\-/*]/.test(buttonValues[i]))
+                        {
+                            totalOperators +=1;
+                        }
+                    }
+
+                    if(totalOperators > 1)
+                    {
+
+                        const converted = convertString(buttonValues)
+
+                        if(converted === "INVALID")
+                        {
+                           
+                            calcDisplay.textContent = "INVALID"
+                            buttonValues = ""
+                            calculation = 0
+        
+            
+                        }
+                                    
+                if(calculation == 0)
+                    {
+                        calculation = operate(converted[0], converted[1], converted[2])
+                        calcDisplay.textContent = calculation
+                        
+                    }
+                    else if (calculation > 0){
+                        
+                        converted[0] = calculation
+                        console.log(converted)
+                        calculation = operate(calculation, converted[1], converted[2])
+                        calcDisplay.textContent = calculation
+                
+                      
+                    }
+                    buttonValues = calculation
+                    totalOperators = 0
+
+                    }
+           
+                        
+         
     
                 }
+            else if(button.className == "clear")
+            {
+                buttonValues = ""
+                calculation = 0
+                calcDisplay.textContent = ""
+
+            }
     
             
             
